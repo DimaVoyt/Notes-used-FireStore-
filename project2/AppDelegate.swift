@@ -38,12 +38,12 @@ class MainNavigationController: UINavigationController {
         } else {
             switchToLogin()
         }
-        
         if #available(iOS 15, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = .systemMint
-            navigationBar.isTranslucent = false  // pass "true" for fixing iOS 15.0 black bg issue
+            navigationBar.isTranslucent = false
+            
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
         }
@@ -66,15 +66,8 @@ var navigation: MainNavigationController {
 
 infix operator |: AdditionPrecedence
 public extension UIColor {
-    
-    /// Easily define two colors for both light and dark mode.
-    /// - Parameters:
-    ///   - lightMode: The color to use in light mode.
-    ///   - darkMode: The color to use in dark mode.
-    /// - Returns: A dynamic color that uses both given colors respectively for the given user interface style.
     static func | (lightMode: UIColor, darkMode: UIColor) -> UIColor {
         guard #available(iOS 13.0, *) else { return lightMode }
-            
         return UIColor { (traitCollection) -> UIColor in
             return traitCollection.userInterfaceStyle == .light ? lightMode : darkMode
         }

@@ -39,7 +39,6 @@ class NotesCell: UITableViewCell {
             style: style,
             reuseIdentifier: reuseIdentifier
         )
-        
         setupConstraints()
     }
     
@@ -59,7 +58,6 @@ class NotesCell: UITableViewCell {
 private extension NotesCell {
     func setupConstraints() {
         contentView.addSubview(stackView)
-        
         stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12).isActive = true
         stackView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 12).isActive = true
         stackView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -12).isActive = true

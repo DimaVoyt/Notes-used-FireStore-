@@ -12,7 +12,7 @@ import FirebaseFirestore
 class NotesListViewController: UIViewController {
     private let firestore = Firestore.firestore()
     private let auth = Auth.auth()
-    
+    private var notesListenerRegistration: ListenerRegistration?
     private var notes = [Note]()
     
     let tableView: UITableView = {
@@ -20,9 +20,7 @@ class NotesListViewController: UIViewController {
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()
-    
-    private var notesListenerRegistration: ListenerRegistration?
-    
+        
     deinit {
         notesListenerRegistration?.remove()
     }
@@ -40,7 +38,6 @@ class NotesListViewController: UIViewController {
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
-        
         addNotesListener()
     }
     

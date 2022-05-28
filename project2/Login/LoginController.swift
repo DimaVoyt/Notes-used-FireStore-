@@ -54,7 +54,6 @@ class LoginController: UIViewController {
         return loginRegister
     }()
     
-    //Name
     let nameContainerView = UIView()
     let textFieldName: UITextField = {
         let tf = UITextField()
@@ -66,13 +65,11 @@ class LoginController: UIViewController {
         return tf
     }()
     
-    //Email
     let emailContainerView = UIView()
     let textFieldEmail: UITextField = {
         let tf = UITextField()
         tf.placeholder = "Email"
         tf.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray | UIColor.white])
-
         tf.tintColor = UIColor.black | UIColor.white
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
@@ -90,7 +87,6 @@ class LoginController: UIViewController {
     
     private let nameSeparator = AuthSeparatorView()
     private let emailSeparator = AuthSeparatorView()
-    
     lazy var authStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [nameContainerView,
                                                 nameSeparator,
@@ -104,10 +100,8 @@ class LoginController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         navigationController?.isNavigationBarHidden = true
         view.backgroundColor = UIColor.systemGray | UIColor.black
-        
         setupConstraints()
         setupButtons()
     }
@@ -118,19 +112,16 @@ private extension LoginController {
         buttonForLoginBackground.addTarget(self, action: #selector(loginBackgroundButtonTapped), for: .touchUpInside)
         buttonForRegisterBackground.addTarget(self, action: #selector(registerBackgroundButtonTapped), for: .touchUpInside)
         registerButton.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
-
     }
     
     @objc
     func loginBackgroundButtonTapped() {
         buttonForLoginBackground.backgroundColor = UIColor.systemIndigo
         buttonForRegisterBackground.backgroundColor = UIColor.init(red: 101/255, green: 67/255, blue: 33/255, alpha: 1)
-        
         nameContainerView.isHidden = true
         nameSeparator.isHidden = true
         registerButton.setTitle("Login", for: .normal)
         textFieldPassword.isSecureTextEntry = true
-        
         state = .login
     }
     
@@ -138,27 +129,22 @@ private extension LoginController {
     func registerBackgroundButtonTapped() {
         buttonForLoginBackground.backgroundColor = UIColor.init(red: 101/255, green: 67/255, blue: 33/255, alpha: 1)
         buttonForRegisterBackground.backgroundColor = UIColor.systemIndigo
-        
         nameContainerView.isHidden = false
         nameSeparator.isHidden = false
         registerButton.setTitle("Register", for: .normal)
         textFieldPassword.isSecureTextEntry = false
-        
         state = .register
     }
     
     @objc
     func handleRegister() {
         guard let email = textFieldEmail.text, let password = textFieldPassword.text, let name = textFieldName.text else {return}
-        
         switch state {
         case .login:
             login(email: email, password: password)
         case .register:
             register(name: name, email: email, password: password)
-
         }
-        
     }
     
     func login(email: String, password: String) {
@@ -175,7 +161,6 @@ private extension LoginController {
     func register(name: String, email: String, password: String) {
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
             guard let self = self else { return }
-            
             if let authResult = authResult {
                 let user = authResult.user
                 
@@ -183,16 +168,12 @@ private extension LoginController {
                     "name": name,
                     "email": email
                 ]
-                
                 self.firestore.collection("users").document(user.uid).setData(data) { error in
                     if error != nil {
                         print("\(String(describing: error))")
                     }
                 }
-            } else {
-                
             }
-            
             if error != nil {
                 print("\(String(describing: error))")
                 return
@@ -218,20 +199,17 @@ private extension LoginController {
         authContentView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24).isActive = true
         authContentView.layer.cornerRadius = 16
         
-        
         registerButton.topAnchor.constraint(equalTo: authContentView.bottomAnchor, constant: 12).isActive = true
         registerButton.centerXAnchor.constraint(equalTo: authContentView.centerXAnchor).isActive = true
         registerButton.widthAnchor.constraint(equalTo: authContentView.widthAnchor, multiplier: 0.7).isActive = true
         registerButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         registerButton.layer.cornerRadius = 22
         
-        
         buttonForRegisterBackground.bottomAnchor.constraint(equalTo: authContentView.topAnchor, constant: -8).isActive = true
         buttonForRegisterBackground.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -12).isActive = true
         buttonForRegisterBackground.heightAnchor.constraint(equalToConstant: 30).isActive = true
         buttonForRegisterBackground.widthAnchor.constraint(equalTo: authContentView.widthAnchor, multiplier: 0.45).isActive = true
         buttonForRegisterBackground.layer.cornerRadius = 12
-        
         
         buttonForLoginBackground.bottomAnchor.constraint(equalTo: authContentView.topAnchor, constant: -8).isActive = true
         buttonForLoginBackground.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 12).isActive = true

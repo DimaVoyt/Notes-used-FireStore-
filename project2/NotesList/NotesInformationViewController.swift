@@ -12,7 +12,7 @@ import FirebaseFirestore
 class NotesInformationViewController: UIViewController {
     let auth = Auth.auth()
     let firestore = Firestore.firestore()
-    
+    var saveChangesButtonBottomAnchor: NSLayoutConstraint?
     private let note: Note
     
     init(note: Note) {
@@ -33,11 +33,8 @@ class NotesInformationViewController: UIViewController {
     
     let viewNoteInfoText: UITextView = {
         let tv = UITextView()
-        
         tv.backgroundColor = UIColor.white | UIColor.black
         tv.font = .systemFont(ofSize: 25, weight: .thin)
-//        tv.text =
-
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()
@@ -64,27 +61,21 @@ class NotesInformationViewController: UIViewController {
         update.updateData(["text": updatedText]) { err in
             if let err = err {
                 print(err)
-            } else {
-                print("yeah")
             }
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         titleName()
         setupconstraintsForInf()
-        
         viewNoteInfoText.text = note.text
-        
         setupKeyboardHandlers()
         setupButton()
     }
     
     func setupKeyboardHandlers() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil, using: handleKeyboardWillShow)
-        
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
@@ -104,17 +95,11 @@ class NotesInformationViewController: UIViewController {
     func handleKeyboardWillHide(
         notification: Notification
     ) {
-//        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-//        let height = keyboardFrame.cgRectValue.height
         saveChangesButtonBottomAnchor?.constant = -12
-        
     }
-    
-    var saveChangesButtonBottomAnchor: NSLayoutConstraint?
     
     func setupButton() {
         saveChangesButton.addTarget(self, action: #selector(saveInfo), for: .touchUpInside)
-
     }
     
     func setupconstraintsForInf() {
@@ -137,19 +122,15 @@ class NotesInformationViewController: UIViewController {
         saveChangesButton.centerXAnchor.constraint(equalTo: viewNoteInf.centerXAnchor).isActive = true
     }
     
-        
     func titleName() {
         firestore.collection("notes").document(note.id)
             .getDocument { [weak self] snapshot, error in
                 guard let self = self, let userData = snapshot?.data() else { return }
-                
                 let title = userData["title"] as? String
                 self.title = title
         }
-
     }
 }
-
 
 var safeAreaInsets: UIEdgeInsets {
     let window = UIApplication.shared.keyWindow
@@ -158,15 +139,10 @@ var safeAreaInsets: UIEdgeInsets {
 
 extension UIApplication {
     var keyWindow: UIWindow? {
-        // Get connected scenes
         return UIApplication.shared.connectedScenes
-            // Keep only active scenes, onscreen and visible to the user
             .filter { $0.activationState == .foregroundActive }
-            // Keep only the first `UIWindowScene`
             .first(where: { $0 is UIWindowScene })
-            // Get its associated windows
             .flatMap({ $0 as? UIWindowScene })?.windows
-            // Finally, keep only the key window
             .first(where: \.isKeyWindow)
     }
 }

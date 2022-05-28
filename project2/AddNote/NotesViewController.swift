@@ -12,6 +12,7 @@ import FirebaseFirestore
 class NotesViewController: UIViewController {
     private let auth = Auth.auth()
     private let firestore = Firestore.firestore()
+    var saveNoteInformationButtonBottomAnchor: NSLayoutConstraint?
     
     let ViewForTextField: UIView = {
         let viewFirst = UIView()
@@ -23,7 +24,6 @@ class NotesViewController: UIViewController {
        let name = UITextField()
         name.placeholder = "Note name"
         name.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor:UIColor.white | UIColor.white])
-
         name.backgroundColor = UIColor.lightGray | UIColor.lightGray
         name.translatesAutoresizingMaskIntoConstraints = false
         return name
@@ -38,7 +38,6 @@ class NotesViewController: UIViewController {
     
     let noteText: UITextView = {
         let noteText = UITextView()
-//        noteText.placeholder = "Type text"
         noteText.backgroundColor = UIColor.lightGray | UIColor.lightGray
         noteText.translatesAutoresizingMaskIntoConstraints = false
         return noteText
@@ -58,7 +57,6 @@ class NotesViewController: UIViewController {
               let noteText = noteText.text,
               let currentUser = Auth.auth().currentUser else { return }
         
-        
         let noteDoc = self.firestore.collection("notes").document()
         
         let data: [String: Any] = [
@@ -71,11 +69,7 @@ class NotesViewController: UIViewController {
         
         noteDoc.setData(data)
         navigation.switchToMain()
-        
-        
-        
     }
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,17 +81,11 @@ class NotesViewController: UIViewController {
         setupKeyboardWillHide()
         setupButtons()
     }
-    
-
 }
 
-var saveNoteInformationButtonBottomAnchor: NSLayoutConstraint?
-
 private extension NotesViewController {
-    
     func setupButtons() {
         saveNoteInformationButton.addTarget(self, action: #selector(saveInfoNotes), for: .touchUpInside)
-
     }
     
     func setupConstraints() {
@@ -135,16 +123,13 @@ private extension NotesViewController {
         saveNoteInformationButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         saveNoteInformationButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.3).isActive = true
         saveNoteInformationButton.layer.cornerRadius = 15
-        
     }
     
     func setupNavigationTitle() {
         guard let currentUser = auth.currentUser else { return }
-        
         firestore.collection("users").document(currentUser.uid)
             .getDocument { [weak self] snapshot, error in
                 guard let self = self, let userData = snapshot?.data() else { return }
-                
                 let name = userData["name"] as? String
                 self.title = name
         }
@@ -162,11 +147,8 @@ private extension NotesViewController {
     func setupKeyboardWillHide() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: nil, using: handleKeyboardWillHide)
     }
-    func handleKeyboardWillHide(notification: Notification) {
-//        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-//        let height = keyboardFrame.cgRectValue.height
-        saveNoteInformationButtonBottomAnchor?.constant = -50
-        
-    }
     
+    func handleKeyboardWillHide(notification: Notification) {
+        saveNoteInformationButtonBottomAnchor?.constant = -50
+    }
 }
